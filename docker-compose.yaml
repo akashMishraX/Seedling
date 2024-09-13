@@ -1,0 +1,10 @@
+services:
+  app:
+    image: akashmishrax/crowdfunding:0.0.1
+    ports:
+      - "5000:3000"
+    volumes:
+    - app-data:/app
+volumes:
+  app-data:
+    driver: local/home/node/app
