@@ -12,3 +12,264 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// USER TABLE
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  email      String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  //relationships-> one-to-one
+  login        Login?
+  Startup      Startup?
+  //relationships-> many-to-one
+  address      Address[]
+  //relationships-> many-to-many
+  UserRole     UserRole[]
+  Investor     Investor?
+  Pledge       Pledge[]
+  Notification Notification[]
+}
+
+model Address {
+  address_id          Int      @id @default(autoincrement())
+  country             String
+  city                String
+  pincode             String
+  address_description String
+  address_type        String
+  created_at          DateTime @default(now())
+  updated_at          DateTime @default(now())
+  user                User     @relation(fields: [user_id], references: [id])
+  user_id             Int
+}
+
+model Roles {
+  role_id    Int      @id @default(autoincrement())
+  role_name  String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  //relationships-> many-to-many
+  UserRole UserRole[]
+}
+
+model UserRole {
+  user     User  @relation(fields: [user_id], references: [id])
+  role     Roles @relation(fields: [roles_id], references: [role_id])
+  user_id  Int
+  roles_id Int
+
+  @@id([user_id, roles_id])
+}
+
+model Login {
+  id         Int      @id @default(autoincrement())
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int      @unique
+}
+
+//  STARTUP TABLE
+model Startup {
+  startup_id Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  founder         User              @relation(fields: [founder_id], references: [id])
+  founder_id      Int               @unique
+  //relationships-> many-to-many
+  startupCategory startupCategory[]
+  StartupComment  StartupComment[]
+  //relationships-> many-to-one
+  Post            Post[]
+  Project         Project[]
+  pledge          Pledge[]
+}
+
+model Category {
+  category_id   Int      @id @default(autoincrement())
+  category_name String   @unique
+  decription    String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+
+  //relationships-> many-to-many
+  startupCategory startupCategory[]
+}
+
+model startupCategory {
+  startup     Startup  @relation(fields: [startup_id], references: [startup_id])
+  category    Category @relation(fields: [category_id], references: [category_id])
+  startup_id  Int
+  category_id Int
+
+  @@id([startup_id, category_id])
+}
+
+model Post {
+  post_id    Int      @id @default(autoincrement())
+  title      String
+  content    String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  startup    Startup @relation(fields: [startup_id], references: [startup_id])
+  startup_id Int
+}
+
+model Project {
+  project_id    Int      @id @default(autoincrement())
+  name          String
+  description   String
+  goal_amount   Float
+  raised_amount Float
+  start_date    DateTime
+  end_date      DateTime
+  status        Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+
+  startup    Startup @relation(fields: [startup_id], references: [startup_id])
+  startup_id Int
+
+  // relationship many-to-one
+  Reward Reward[]
+  Update Update[]
+}
+
+model Reward {
+  reward_id          Int      @id @default(autoincrement())
+  // startup_id 
+  title              String
+  decription         String
+  amount             Float
+  quantity_avaliable Int
+  created_at         DateTime @default(now())
+  updated_at         DateTime @default(now())
+
+  project    Project @relation(fields: [project_id], references: [project_id])
+  project_id Int
+
+  //  realtionship many-to-one
+  Pledge Pledge[]
+}
+
+model Update {
+  update_id  Int      @id @default(autoincrement())
+  // startup_id
+  title      String
+  decription String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  project    Project @relation(fields: [project_id], references: [project_id])
+  project_id Int
+}
+
+// INVESTOR TABLE
+model Investor {
+  id            Int      @id @default(autoincrement())
+  total_pledged Int
+  total_reward  Float
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+
+  investor    User @relation(fields: [investor_id], references: [id])
+  investor_id Int  @unique
+
+  //relationships-> many-to-one
+  pledge      Pledge[]
+  Transaction Transaction?
+
+  // Realtionship many-to-many
+  InvestorComment InvestorComment[]
+}
+
+model Pledge {
+  pledge_id  Int      @id @default(autoincrement())
+  amount     Float
+  message    String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  Investor    Investor @relation(fields: [investor_id], references: [investor_id])
+  investor_id Int
+  User        User?    @relation(fields: [userId], references: [id])
+  userId      Int?
+
+  startup    Startup @relation(fields: [startup_id], references: [startup_id])
+  startup_id Int
+
+  reward    Reward @relation(fields: [reward_id], references: [reward_id])
+  reward_id Int
+
+  // Realtionship one-to-one
+  Transaction Transaction?
+}
+
+model Transaction {
+  transaction_id                Int      @id @default(autoincrement())
+  amount                        Float
+  status                        Boolean  @default(false)
+  transaction_date              DateTime
+  payment_gateway_response_data Json
+  created_at                    DateTime @default(now())
+  updated_at                    DateTime @default(now())
+
+  pledge      Pledge   @relation(fields: [pledge_id], references: [pledge_id])
+  pledge_id   Int      @unique
+  investor    Investor @relation(fields: [investor_id], references: [investor_id])
+  investor_id Int      @unique
+}
+
+model Comment {
+  comment_id        Int      @id @default(autoincrement())
+  parent_comment_id Int
+  comment_message   String
+  likes_count       Int
+  dislikes_count    Int
+  is_edited         Boolean
+  created_at        DateTime @default(now())
+  updated_at        DateTime @default(now())
+
+  // Realtionship many-to-many
+  InvestorComment InvestorComment[]
+  StartupComment  StartupComment[]
+}
+
+model InvestorComment {
+  investor    Investor @relation(fields: [investor_id], references: [investor_id])
+  comment     Comment  @relation(fields: [comment_id], references: [comment_id])
+  investor_id Int
+  comment_id  Int
+
+  @@id([investor_id, comment_id])
+}
+
+model StartupComment {
+  startup    Startup @relation(fields: [startup_id], references: [startup_id])
+  comment    Comment @relation(fields: [comment_id], references: [comment_id])
+  startup_id Int
+  comment_id Int
+
+  @@id([startup_id, comment_id])
+}
+
+model Notification {
+  notification_id   Int      @id @default(autoincrement())
+  notification_type String
+  message           String
+  refrence_id       Int
+  refrence_type     String
+  is_read           Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @default(now())
+
+  user    User @relation(fields: [user_id], references: [id])
+  user_id Int
+}
