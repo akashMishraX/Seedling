@@ -1,10 +1,22 @@
 services:
   app:
-    image: akashmishrax/crowdfunding:0.0.1
+    build: .
     ports:
-      - "5000:3000"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://akash:password@db:5432/postgresDB?schema=public
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=postgresDB
+      - POSTGRES_USER=akash
+      - POSTGRES_PASSWORD=password
     volumes:
-    - app-data:/app
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
-  app-data:
-    driver: local/home/node/app
+  postgres_data:
