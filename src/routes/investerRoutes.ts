@@ -5,7 +5,6 @@ const investerRouter = Router();
 
 //Inverstors route
 investerRouter.get('/',getInvestor)
-
 investerRouter.get('/profile',getInvestorProfile)
 
 
