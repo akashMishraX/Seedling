@@ -1,22 +1,23 @@
-services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://akash:password@db:5432/postgresDB?schema=public
-    depends_on:
-      - db
 
-  db:
+services:
+  postgres:
     image: postgres:latest
+    container_name: my-postgres-db
     environment:
-      - POSTGRES_DB=postgresDB
-      - POSTGRES_USER=akash
-      - POSTGRES_PASSWORD=password
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  app:
+    build: .
+    container_name: my_express_app
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://postgres:mypassword@localhost:5432/postgres?sslmode=disable
+    ports:
+      - "3000:3000"
 
 volumes:
   postgres_data:

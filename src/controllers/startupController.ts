@@ -1,8 +1,9 @@
 import {Request , Response} from 'express';
+import { main } from '../models';
 
 //To get inverstor
 export const getStartup = (req:Request , res:Response) => {
-    res.send('startup');
+    main()
 }
 
 export const getStartupProfile = (req:Request , res:Response) => {
