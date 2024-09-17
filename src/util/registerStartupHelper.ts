@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { getOrCreateAllRoles } from './allRolesHelper'
+
 
 const prisma = new PrismaClient();
 
@@ -44,6 +46,7 @@ export async function  createStartup(
     if (!USER_DATA || !USER_TYPE) { throw new Error('Missing required fields');}
     if (existingUser) {throw new Error('Username already taken');}
     try {
+        const roleName :string = await getOrCreateAllRoles(USER_TYPE);
         const categoryName: string = await getOrCreateCategories(USER_DATA.category,USER_DATA.categoryDescription);
         await prisma.user.create({
             data: {
@@ -67,7 +70,7 @@ export async function  createStartup(
                     create: {
                         role:{
                             connect:{
-                                role_name: USER_TYPE
+                                role_name: roleName
                             }
                         }
                     }             

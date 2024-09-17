@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-
 const prisma = new PrismaClient();
 
 export async function  createInvestor(USER_DATA:{username:string,email:string,country:string,city:string,pincode:string,address_description:string,address_type:string,password:string},USER_TYPE:string) {
