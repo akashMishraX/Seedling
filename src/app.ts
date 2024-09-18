@@ -18,7 +18,7 @@ app.use(express.json());
 // Base Route 
 const BASE_URL = '/api/v0'
 const BASE_URL_STARTUP = BASE_URL+'/startup'
-const BASE_URL_INVESTER = BASE_URL+'/invester'
+const BASE_URL_INVESTER = BASE_URL+'/investor'
 const BASE_URL_AUTH = BASE_URL+'/auth'
 
 // Route Handlers

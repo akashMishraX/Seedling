@@ -7,20 +7,22 @@ export const userAuthLogin = (req:Request , res:Response) => {
     res.send('auth');
 }
 
-export const userAuthRegister = (req:Request , res:Response) => {
+export const userAuthRegister = async (req:Request , res:Response) => {
     try {
+        var result:string = '';
         const USER_TYPE = req.params.userType;
         if (USER_TYPE == 'startup'){
-            createStartup(req.body,req.params.userType,)
+            result = await createStartup(req.body,req.params.userType)
         }
         else if (USER_TYPE == 'investor'){
-            createInvestor(req.body,req.params.userType)
+            result = await createInvestor(req.body,req.params.userType)
         }
         else {
             res.status(400).send({ error: 'Invalid user type' });
         }
+        res.send(result);
     } catch (error) {
-        res.status(500).send({ error: 'Internal Server Error' });
+        res.status(500).send({ error:  `${error}` });
     }
 }
 

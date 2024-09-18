@@ -1,15 +1,30 @@
 import { PrismaClient } from '@prisma/client';
+import { getOrCreateAllRoles } from './allRolesHelper'
+
+
 const prisma = new PrismaClient();
 
-export async function  createInvestor(USER_DATA:{username:string,email:string,country:string,city:string,pincode:string,address_description:string,address_type:string,password:string},USER_TYPE:string) {
+
+export async function  createInvestor(
+    USER_DATA:{
+        username:string,
+        email:string,
+        country:string,
+        city:string,
+        pincode:string,
+        address_description:string,
+        address_type:string,
+        password:string
+    },USER_TYPE:string) : Promise<string> {
+        
     const existingUser = await prisma.user.findUnique({
         where: { username: USER_DATA.username },
     });
     if (!USER_DATA || !USER_TYPE) { throw new Error('Missing required fields');}
     if (existingUser) {throw new Error('Username already taken');}
     try {
-        
-        const user = await prisma.user.create({
+        const roleName :string = await getOrCreateAllRoles(USER_TYPE);
+        await prisma.user.create({
             data: {
                 username: USER_DATA.username,
                 email:  USER_DATA.email, 
@@ -31,16 +46,25 @@ export async function  createInvestor(USER_DATA:{username:string,email:string,co
                     create: {
                         role:{
                             connect:{
-                                role_name: USER_TYPE
+                                role_name: roleName
                             }
                         }
                     }             
                 },
-                Investor:{},        
+                Investor:{
+                    create:{
+                        total_pledged: 0,
+                        total_reward: 0.0,  
+                    }
+
+                }        
             }
-        })    
+        }) 
+    return "success"   
     }
     catch (error) {
         throw new Error(`Error creating user: ${error}`);
     }
 }
+
+

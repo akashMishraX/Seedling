@@ -38,7 +38,7 @@ export async function  createStartup(
         password:string,
         category:string,
         categoryDescription:string
-    },USER_TYPE:string) : Promise<void> {
+    },USER_TYPE:string) : Promise<string> {
         
     const existingUser = await prisma.user.findUnique({
         where: { username: USER_DATA.username },
@@ -89,7 +89,8 @@ export async function  createStartup(
                     }
                 },        
             }
-        })    
+        }) 
+    return "success"   
     }
     catch (error) {
         throw new Error(`Error creating user: ${error}`);
