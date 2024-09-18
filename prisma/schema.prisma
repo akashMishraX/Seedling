@@ -67,15 +67,17 @@ model Startup {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  founder         User              @relation(fields: [founder_id], references: [id])
-  founder_id      Int               @unique
-  //relationships-> many-to-many
-  startupCategory startupCategory[]
-  StartupComment  StartupComment[]
+  founder    User @relation(fields: [founder_id], references: [id])
+  founder_id Int  @unique
+
   //relationships-> many-to-one
-  Post            Post[]
-  Project         Project[]
-  pledge          Pledge[]
+  Post    Post[]
+  Project Project[]
+  pledge  Pledge[]
+  comment Comment[]
+
+  Category            Category? @relation(fields: [categoryCategory_id], references: [category_id])
+  categoryCategory_id Int?
 }
 
 model Category {
@@ -86,16 +88,7 @@ model Category {
   updated_at    DateTime @default(now())
 
   //relationships-> many-to-many
-  startupCategory startupCategory[]
-}
-
-model startupCategory {
-  startup     Startup  @relation(fields: [startup_id], references: [startup_id])
-  category    Category @relation(fields: [category_id], references: [category_id])
-  startup_id  Int
-  category_id Int
-
-  @@id([startup_id, category_id])
+  startup Startup[]
 }
 
 model Post {
@@ -170,11 +163,10 @@ model Investor {
   investor_id Int  @unique
 
   //relationships-> many-to-one
-  pledge      Pledge[]
-  Transaction Transaction?
+  pledge Pledge[]
 
   // Realtionship many-to-many
-  InvestorComment InvestorComment[]
+  comment Comment[]
 }
 
 model Pledge {
@@ -208,10 +200,8 @@ model Transaction {
   created_at                    DateTime @default(now())
   updated_at                    DateTime @default(now())
 
-  pledge      Pledge   @relation(fields: [pledge_id], references: [pledge_id])
-  pledge_id   Int      @unique
-  investor    Investor @relation(fields: [investor_id], references: [investor_id])
-  investor_id Int      @unique
+  pledge    Pledge @relation(fields: [pledge_id], references: [pledge_id])
+  pledge_id Int    @unique
 }
 
 model Comment {
@@ -225,26 +215,11 @@ model Comment {
   updated_at        DateTime @default(now())
 
   // Realtionship many-to-many
-  InvestorComment InvestorComment[]
-  StartupComment  StartupComment[]
-}
 
-model InvestorComment {
-  investor    Investor @relation(fields: [investor_id], references: [investor_id])
-  comment     Comment  @relation(fields: [comment_id], references: [comment_id])
-  investor_id Int
-  comment_id  Int
-
-  @@id([investor_id, comment_id])
-}
-
-model StartupComment {
-  startup    Startup @relation(fields: [startup_id], references: [startup_id])
-  comment    Comment @relation(fields: [comment_id], references: [comment_id])
-  startup_id Int
-  comment_id Int
-
-  @@id([startup_id, comment_id])
+  Startup           Startup?  @relation(fields: [startupStartup_id], references: [startup_id])
+  startupStartup_id Int?
+  Investor          Investor? @relation(fields: [investorId], references: [id])
+  investorId        Int?
 }
 
 model Notification {

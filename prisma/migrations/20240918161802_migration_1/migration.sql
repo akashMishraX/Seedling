@@ -52,6 +52,7 @@ CREATE TABLE "Startup" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "founder_id" INTEGER NOT NULL,
+    "categoryCategory_id" INTEGER,
 
     CONSTRAINT "Startup_pkey" PRIMARY KEY ("startup_id")
 );
@@ -65,14 +66,6 @@ CREATE TABLE "Category" (
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("category_id")
-);
-
--- CreateTable
-CREATE TABLE "startupCategory" (
-    "startup_id" INTEGER NOT NULL,
-    "category_id" INTEGER NOT NULL,
-
-    CONSTRAINT "startupCategory_pkey" PRIMARY KEY ("startup_id","category_id")
 );
 
 -- CreateTable
@@ -167,7 +160,6 @@ CREATE TABLE "Transaction" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "pledge_id" INTEGER NOT NULL,
-    "investor_id" INTEGER NOT NULL,
 
     CONSTRAINT "Transaction_pkey" PRIMARY KEY ("transaction_id")
 );
@@ -182,24 +174,10 @@ CREATE TABLE "Comment" (
     "is_edited" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "startupStartup_id" INTEGER,
+    "investorId" INTEGER,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("comment_id")
-);
-
--- CreateTable
-CREATE TABLE "InvestorComment" (
-    "investor_id" INTEGER NOT NULL,
-    "comment_id" INTEGER NOT NULL,
-
-    CONSTRAINT "InvestorComment_pkey" PRIMARY KEY ("investor_id","comment_id")
-);
-
--- CreateTable
-CREATE TABLE "StartupComment" (
-    "startup_id" INTEGER NOT NULL,
-    "comment_id" INTEGER NOT NULL,
-
-    CONSTRAINT "StartupComment_pkey" PRIMARY KEY ("startup_id","comment_id")
 );
 
 -- CreateTable
@@ -238,9 +216,6 @@ CREATE UNIQUE INDEX "Investor_investor_id_key" ON "Investor"("investor_id");
 -- CreateIndex
 CREATE UNIQUE INDEX "Transaction_pledge_id_key" ON "Transaction"("pledge_id");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Transaction_investor_id_key" ON "Transaction"("investor_id");
-
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "Roles"("role_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -254,10 +229,7 @@ ALTER TABLE "Login" ADD CONSTRAINT "Login_user_id_fkey" FOREIGN KEY ("user_id") 
 ALTER TABLE "Startup" ADD CONSTRAINT "Startup_founder_id_fkey" FOREIGN KEY ("founder_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "startupCategory" ADD CONSTRAINT "startupCategory_startup_id_fkey" FOREIGN KEY ("startup_id") REFERENCES "Startup"("startup_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "startupCategory" ADD CONSTRAINT "startupCategory_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("category_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Startup" ADD CONSTRAINT "Startup_categoryCategory_id_fkey" FOREIGN KEY ("categoryCategory_id") REFERENCES "Category"("category_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD CONSTRAINT "Post_startup_id_fkey" FOREIGN KEY ("startup_id") REFERENCES "Startup"("startup_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -290,19 +262,10 @@ ALTER TABLE "Pledge" ADD CONSTRAINT "Pledge_reward_id_fkey" FOREIGN KEY ("reward
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_pledge_id_fkey" FOREIGN KEY ("pledge_id") REFERENCES "Pledge"("pledge_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_investor_id_fkey" FOREIGN KEY ("investor_id") REFERENCES "Investor"("investor_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_startupStartup_id_fkey" FOREIGN KEY ("startupStartup_id") REFERENCES "Startup"("startup_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "InvestorComment" ADD CONSTRAINT "InvestorComment_investor_id_fkey" FOREIGN KEY ("investor_id") REFERENCES "Investor"("investor_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "InvestorComment" ADD CONSTRAINT "InvestorComment_comment_id_fkey" FOREIGN KEY ("comment_id") REFERENCES "Comment"("comment_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "StartupComment" ADD CONSTRAINT "StartupComment_startup_id_fkey" FOREIGN KEY ("startup_id") REFERENCES "Startup"("startup_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "StartupComment" ADD CONSTRAINT "StartupComment_comment_id_fkey" FOREIGN KEY ("comment_id") REFERENCES "Comment"("comment_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_investorId_fkey" FOREIGN KEY ("investorId") REFERENCES "Investor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
