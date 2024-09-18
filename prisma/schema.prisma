@@ -21,10 +21,12 @@ model User {
   //relationships-> many-to-one
   address      Address[]
   //relationships-> many-to-many
-  UserRole     UserRole[]
   Investor     Investor?
   Pledge       Pledge[]
   Notification Notification[]
+
+  Roles   Roles? @relation(fields: [role_id], references: [role_id])
+  role_id Int?
 }
 
 model Address {
@@ -46,17 +48,8 @@ model Roles {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  //relationships-> many-to-many
-  UserRole UserRole[]
-}
-
-model UserRole {
-  user     User  @relation(fields: [user_id], references: [id])
-  role     Roles @relation(fields: [roles_id], references: [role_id])
-  user_id  Int
-  roles_id Int
-
-  @@id([user_id, roles_id])
+  //relationships-> many-to-one
+  user User[]
 }
 
 model Login {

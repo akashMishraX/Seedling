@@ -65,15 +65,11 @@ export async function  createStartup(
                     create: {
                         password : USER_DATA.password,
                     }
-                },
-                UserRole: {
-                    create: {
-                        role:{
-                            connect:{
-                                role_name: roleName
-                            }
-                        }
-                    }             
+                },           
+                Roles:{
+                    connect: {
+                        role_name: roleName
+                    }
                 },
                 Startup:{
                     create: {

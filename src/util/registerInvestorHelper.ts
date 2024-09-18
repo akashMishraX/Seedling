@@ -14,7 +14,9 @@ export async function  createInvestor(
         pincode:string,
         address_description:string,
         address_type:string,
-        password:string
+        password:string,
+        category:string,
+        categoryDescription:string
     },USER_TYPE:string) : Promise<string> {
         
     const existingUser = await prisma.user.findUnique({
@@ -42,19 +44,15 @@ export async function  createInvestor(
                         password : USER_DATA.password,
                     }
                 },
-                UserRole: {
-                    create: {
-                        role:{
-                            connect:{
-                                role_name: roleName
-                            }
-                        }
-                    }             
+                Roles:{
+                    connect: {
+                        role_name: roleName
+                    }
                 },
                 Investor:{
                     create:{
                         total_pledged: 0,
-                        total_reward: 0.0,  
+                        total_reward: 0.0,                            
                     }
 
                 }        

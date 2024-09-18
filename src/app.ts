@@ -22,7 +22,6 @@ const BASE_URL_INVESTER = BASE_URL+'/investor'
 const BASE_URL_AUTH = BASE_URL+'/auth'
 
 // Route Handlers
-
 app.use(BASE_URL_AUTH,userAuth);
 app.use(BASE_URL_STARTUP, startupRouter);
 app.use(BASE_URL_INVESTER, investerRouter);

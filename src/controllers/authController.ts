@@ -2,9 +2,14 @@ import {Request , Response} from 'express';
 import { createStartup } from '../util/registerStartupHelper';
 import { createInvestor } from '../util/registerInvestorHelper';
 
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
 
 export const userAuthLogin = (req:Request , res:Response) => {
-    res.send('auth');
+    const USER_TYPE = req.params.userType;
+    const USER_NAME = req.params.userName;
+
 }
 
 export const userAuthRegister = async (req:Request , res:Response) => {
@@ -28,5 +33,15 @@ export const userAuthRegister = async (req:Request , res:Response) => {
 
 
 
-
+// async function getUser(usertype:string,username : string) {
+//     const existingUser = await prisma.user.findUnique({
+//         where: { username: username,  UserRole : usertype  },
+//     });
+//     if(existingUser){
+//         return existingUser.username
+//     }
+//     else{
+//         throw new Error('User not found');
+//     }
+// }
 
