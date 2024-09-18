@@ -140,8 +140,8 @@ CREATE TABLE "Update" (
 -- CreateTable
 CREATE TABLE "Investor" (
     "id" SERIAL NOT NULL,
-    "total_pledged" INTEGER NOT NULL,
-    "total_reward" DOUBLE PRECISION NOT NULL,
+    "total_pledged" INTEGER NOT NULL DEFAULT 0,
+    "total_reward" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "investor_id" INTEGER NOT NULL,
