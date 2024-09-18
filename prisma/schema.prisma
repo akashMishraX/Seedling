@@ -76,8 +76,8 @@ model Startup {
   pledge  Pledge[]
   comment Comment[]
 
-  Category            Category? @relation(fields: [categoryCategory_id], references: [category_id])
-  categoryCategory_id Int?
+  Category    Category? @relation(fields: [category_id], references: [category_id])
+  category_id Int?
 }
 
 model Category {
@@ -216,10 +216,10 @@ model Comment {
 
   // Realtionship many-to-many
 
-  Startup           Startup?  @relation(fields: [startupStartup_id], references: [startup_id])
-  startupStartup_id Int?
-  Investor          Investor? @relation(fields: [investorId], references: [id])
-  investorId        Int?
+  Startup    Startup?  @relation(fields: [startup_id], references: [startup_id])
+  startup_id Int?
+  Investor   Investor? @relation(fields: [investorId], references: [id])
+  investorId Int?
 }
 
 model Notification {
