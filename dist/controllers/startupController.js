@@ -3,14 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStartupProfile = exports.getStartup = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-//To get inverstor
+//To get startup
 const getStartup = (req, res) => {
     try {
-        createRoles();
+        if (!req || !res) {
+            throw new Error('Missing request or response objects');
+        }
+        res.send(`Hello Startup`);
     }
-    catch {
-        console.error('error');
-        res.redirect('/startup/profile');
+    catch (error) {
+        console.error('Error in getStartup function:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
     }
 };
 exports.getStartup = getStartup;
@@ -32,8 +35,5 @@ async function createRoles() {
             }
         ]
     });
-}
-function redirect(arg0) {
-    throw new Error('Function not implemented.');
 }
 //# sourceMappingURL=startupController.js.map

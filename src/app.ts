@@ -5,19 +5,12 @@ import startupRouter from "./routes/startupRoutes";
 import investerRouter from "./routes/investerRoutes";
 import userAuth from "./routes/authRoutes";
 import { authenticate } from "./controllers/authController";
-
-
-
 const app:Express = express();
-
-
 // middleware
 app.use(cookieParser());
 app.use(express.json());
 
-
 // app.use(authenticate);
-
 
 // Base Route 
 const BASE_URL = '/api/v0'

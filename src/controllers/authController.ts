@@ -4,34 +4,46 @@ import { createInvestor } from '../util/registerInvestorHelper';
 import { checkUserAndPassword } from '../util/autherizationHelper';
 import { verifyJWTToken } from './../middleware/checkAuthentication'
 import { JwtPayload } from 'jsonwebtoken';
+import {Token , resResult ,userData} from './../types/index'
 
 
 const SECERT_KEY = process.env.SECERT_KEY || "";
+
 
 
 export const userAuthLogin = async (req:Request , res:Response) => {
     const USER_TYPE = req.params.userType;
     const USER_NAME = req.params.userName;
     const PASSWORD = req.body.password;
+    const USER_DATA : Readonly<userData> = {
+        username : USER_NAME,
+        password : PASSWORD,
+        usertype : USER_TYPE,
+        SECRET_KEY : SECERT_KEY
+    }
     try {
-        const token = await checkUserAndPassword(USER_TYPE,USER_NAME,PASSWORD,SECERT_KEY);
+        const token : Readonly<Token> = await checkUserAndPassword(USER_DATA);
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
         });
-        res.status(200).send({
+        const resData : Readonly<resResult> = {
             response : token,
             error : null
-        });
+        }
+        res.status(200).send(resData);
     } catch (error) {
-        res.status(500).send({ 
+        const resData : Readonly<resResult> = { 
             response : null,
             error:  `${error}` 
-        });
+        }
+        res.status(500).send(resData);
     }
     
 }
+
+
 
 export const userAuthRegister = async (req:Request , res:Response) => {
     try {
@@ -77,6 +89,5 @@ export async function authenticate(req:Request , res:Response, next :NextFunctio
     }
     next(); // Proceed to the next middleware or route handler
 };
-
 
 
