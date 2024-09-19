@@ -5,24 +5,27 @@ import { getOrCreateAllRoles } from './allRolesHelper'
 const prisma = new PrismaClient();
 
 
-async function getOrCreateCategories(categoryName: string,categoryDescription:string): Promise<string> {
+async function getOrCreateCategories(categoryName: string,categoryDescription:string): Promise<number> {
     let category_Name: string; 
+    let category_id: number;
     const categoryRes = await prisma.category.findUnique({
         where: { category_name: categoryName },
     });
 
-        if (categoryRes) {
-            category_Name = categoryRes.category_name;
-        } else {
-            const newCategory = await prisma.category.create({
-                data: {
-                    category_name: categoryName,
-                    description: categoryDescription
-                }
-            });
-            category_Name = newCategory.category_name;
-        }
-    return category_Name;
+    if (categoryRes) {
+        category_Name = categoryRes.category_name;
+        category_id = categoryRes.category_id;
+    } else {
+        const newCategory = await prisma.category.create({
+            data: {
+                category_name: categoryName,
+                description: categoryDescription
+            }
+        });
+        category_Name = newCategory.category_name;
+        category_id = newCategory.category_id;
+    }
+    return category_id;
 }
 
 
@@ -47,7 +50,7 @@ export async function  createStartup(
     if (existingUser) {throw new Error('Username already taken');}
     try {
         const roleName :string = await getOrCreateAllRoles(USER_TYPE);
-        const categoryName: string = await getOrCreateCategories(USER_DATA.category,USER_DATA.categoryDescription);
+        const categoryId: number = await getOrCreateCategories(USER_DATA.category,USER_DATA.categoryDescription);
         await prisma.user.create({
             data: {
                 username: USER_DATA.username,
@@ -72,18 +75,15 @@ export async function  createStartup(
                     }
                 },
                 Startup:{
-                    create: {
-                        startupCategory:{
-                            create:{
-                                category:{
-                                    connect:{
-                                        category_name: categoryName
-                                    }
-                                }
+                    create:{
+                        Category:{
+                            connect: {
+                                category_id: categoryId
                             }
-                        }                        
+                        }   
                     }
-                },        
+                }
+                
             }
         }) 
     return "success"   

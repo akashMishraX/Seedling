@@ -11,7 +11,7 @@ export const getStartup = (req: Request, res: Response): void => {
             throw new Error('Missing request or response objects');
         }
 
-        res.send('startup');
+        res.send(`Hello Startup`);
     } catch (error) {
         console.error('Error in getStartup function:', error);
         res.status(500).send({ error: 'Internal Server Error' });

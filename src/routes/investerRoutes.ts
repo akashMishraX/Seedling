@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { getInvestor, getInvestorProfile } from "../controllers/inverstorController";
+import { authenticate } from "../controllers/authController";
 const investerRouter = Router();
 
 
