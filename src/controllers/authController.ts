@@ -4,32 +4,31 @@ import { createInvestor } from '../util/registerInvestorHelper';
 import { checkUserAndPassword } from '../util/autherizationHelper';
 import { verifyJWTToken } from './../middleware/checkAuthentication'
 import { JwtPayload } from 'jsonwebtoken';
-import {Token , resResult ,userData} from './../types/index'
+import {Token , resResult ,userData ,key} from './../types/index'
 
 
-const SECERT_KEY = process.env.SECERT_KEY || "";
-
-
+const KEY : Readonly<key>={ 
+    SECRET_KEY : process.env.SECRET_KEY || ""
+}
 
 export const userAuthLogin = async (req:Request , res:Response) => {
-    const USER_TYPE = req.params.userType;
-    const USER_NAME = req.params.userName;
-    const PASSWORD = req.body.password;
     const USER_DATA : Readonly<userData> = {
-        username : USER_NAME,
-        password : PASSWORD,
-        usertype : USER_TYPE,
-        SECRET_KEY : SECERT_KEY
+        usertype : req.params.userType,
+        username : req.params.userName,
+        password : req.body.password,
+        SECRET_KEY : KEY.SECRET_KEY
     }
     try {
-        const token : Readonly<Token> = await checkUserAndPassword(USER_DATA);
+        const token : Readonly<Token> = {
+            TOKEN_KEY : await checkUserAndPassword(USER_DATA)
+        }
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
         });
         const resData : Readonly<resResult> = {
-            response : token,
+            response : token.TOKEN_KEY,
             error : null
         }
         res.status(200).send(resData);
@@ -78,12 +77,12 @@ export async function authenticate(req:Request , res:Response, next :NextFunctio
     if (!token) {
         return res.status(401).send({ error: "Unauthorized: No token provided" });
     }
-
-    const decoded = await verifyJWTToken(token, SECERT_KEY) as JwtPayload;
+    
+    const decoded = await verifyJWTToken(token, KEY.SECRET_KEY) as JwtPayload;
     if (!decoded) {
         return res.status(401).send({ error: "Unauthorized: Invalid token" });
     }
-    const USER_TYPE = req.headers['user-type'] as string;
+    const USER_TYPE = req.headers['User-Type'] as string;
     if(decoded.userType != USER_TYPE) {
         return res.status(401).send({ error: "Unauthorized" });
     }

@@ -1,18 +1,16 @@
-export interface JwtPayload {
-    userType: string;
-    username: string;
-    password: string;
-}
 
-export interface userData {
+export interface blueprint {
     usertype: string;
     username: string;
     password: string;
-    SECRET_KEY: string;
+    SECRET_KEY: string ;
+    response : string | null;
+    error : string | null;
+    TOKEN_KEY : string | null;
 }
-export interface resResult {
-    response : string | null,
-    error : string | null,
-}    
 
-export type Token = string;
+export type userData = Pick<blueprint,'usertype'| 'username'|'password'|'SECRET_KEY'>
+export type JwtPayload = Pick<blueprint,'usertype'| 'username'|'password'>
+export type key = Pick<blueprint,'SECRET_KEY'>
+export type resResult = Pick<blueprint,'response'| 'error'>
+export type Token = Pick<blueprint,'TOKEN_KEY'>

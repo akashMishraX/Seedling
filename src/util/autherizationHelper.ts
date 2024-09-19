@@ -5,14 +5,13 @@ import {JwtPayload,userData} from './../types/index'
 const prisma = new PrismaClient();
 
 
-
-async function getJWTToken(username:string,userType:string,password:string,SECERT_KEY:string) {
+async function getJWTToken(USER_DATA :userData) {
     const playload : Readonly<JwtPayload> = {
-        userType : userType,
-        username : username,
-        password : password
+        usertype : USER_DATA.usertype,
+        username : USER_DATA.username,
+        password : USER_DATA.password
     }
-    return jwt.sign(playload,SECERT_KEY); 
+    return jwt.sign(playload,USER_DATA.SECRET_KEY); 
 }
 
 
@@ -36,7 +35,7 @@ export async function checkUserAndPassword(USER_DATA : Readonly<userData>) {
         throw new Error('Invalid username or password');
     }
 
-    const token = await getJWTToken(USER_DATA.username,USER_DATA.usertype, USER_DATA.password,USER_DATA.SECRET_KEY);
+    const token = await getJWTToken(USER_DATA);
     return token
    
 }
