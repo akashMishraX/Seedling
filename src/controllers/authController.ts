@@ -4,7 +4,7 @@ import { createInvestor } from '../util/registerInvestorHelper';
 import { checkUserAndPassword } from '../util/autherizationHelper';
 import { verifyJWTToken } from './../middleware/checkAuthentication'
 import { JwtPayload } from 'jsonwebtoken';
-import {Token , resResult ,userData ,key} from './../types/index'
+import {Token, key, userData, resResult} from './../types/index'
 
 
 const KEY : Readonly<key>={ 
@@ -13,9 +13,9 @@ const KEY : Readonly<key>={
 
 export const userAuthLogin = async (req:Request , res:Response) => {
     const USER_DATA : Readonly<userData> = {
-        usertype : req.params.userType,
-        username : req.params.userName,
-        password : req.body.password,
+        USER_TYPE : req.params.userType,
+        USER_NAME : req.params.userName,
+        PASSWORD : req.body.password,
         SECRET_KEY : KEY.SECRET_KEY
     }
     try {
@@ -28,14 +28,14 @@ export const userAuthLogin = async (req:Request , res:Response) => {
             sameSite: "strict",
         });
         const resData : Readonly<resResult> = {
-            response : token.TOKEN_KEY,
-            error : null
+            RESPONSE : token.TOKEN_KEY,
+            ERROR : null
         }
         res.status(200).send(resData);
     } catch (error) {
         const resData : Readonly<resResult> = { 
-            response : null,
-            error:  `${error}` 
+            RESPONSE : null,
+            ERROR:  `${error}` 
         }
         res.status(500).send(resData);
     }
