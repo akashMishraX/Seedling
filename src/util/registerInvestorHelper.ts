@@ -1,23 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { getOrCreateAllRoles } from './allRolesHelper'
-
+import {userInvestorRegisterData} from '../types/index'
 
 const prisma = new PrismaClient();
 
 
-export async function  createInvestor(
-    USER_DATA:{
-        username:string,
-        email:string,
-        country:string,
-        city:string,
-        pincode:string,
-        address_description:string,
-        address_type:string,
-        password:string,
-        category:string,
-        categoryDescription:string
-    },USER_TYPE:string) : Promise<string> {
+export async function  createInvestor(USER_DATA:Readonly<userInvestorRegisterData>,USER_TYPE:string) : Promise<string> {
         
     const existingUser = await prisma.user.findUnique({
         where: { username: USER_DATA.username },

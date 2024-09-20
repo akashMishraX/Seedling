@@ -1,15 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import { getOrCreateAllRoles } from './allRolesHelper'
-
+import { categorySchema,userStartupRegisterData} from '../types/index'
 
 const prisma = new PrismaClient();
 
 
-async function getOrCreateCategories(categoryName: string,categoryDescription:string): Promise<number> {
+async function getOrCreateCategories(CATEGORY_DATA:Readonly<categorySchema>): Promise<number> {
     let category_Name: string; 
     let category_id: number;
     const categoryRes = await prisma.category.findUnique({
-        where: { category_name: categoryName },
+        where: { category_name: CATEGORY_DATA.category },
     });
 
     if (categoryRes) {
@@ -18,8 +18,8 @@ async function getOrCreateCategories(categoryName: string,categoryDescription:st
     } else {
         const newCategory = await prisma.category.create({
             data: {
-                category_name: categoryName,
-                description: categoryDescription
+                category_name: CATEGORY_DATA.category ,
+                description: CATEGORY_DATA.categoryDescription
             }
         });
         category_Name = newCategory.category_name;
@@ -29,19 +29,7 @@ async function getOrCreateCategories(categoryName: string,categoryDescription:st
 }
 
 
-export async function  createStartup(
-    USER_DATA:{
-        username:string,
-        email:string,
-        country:string,
-        city:string,
-        pincode:string,
-        address_description:string,
-        address_type:string,
-        password:string,
-        category:string,
-        categoryDescription:string
-    },USER_TYPE:string) : Promise<string> {
+export async function  createStartup(USER_DATA:Readonly<userStartupRegisterData>,USER_TYPE:string) : Promise<string> {
         
     const existingUser = await prisma.user.findUnique({
         where: { username: USER_DATA.username },
@@ -50,7 +38,11 @@ export async function  createStartup(
     if (existingUser) {throw new Error('Username already taken');}
     try {
         const roleName :string = await getOrCreateAllRoles(USER_TYPE);
-        const categoryId: number = await getOrCreateCategories(USER_DATA.category,USER_DATA.categoryDescription);
+        const CATEGORY_DATA = {
+            category: USER_DATA.category,
+            categoryDescription: USER_DATA.categoryDescription
+        }
+        const categoryId: number = await getOrCreateCategories(CATEGORY_DATA);
         await prisma.user.create({
             data: {
                 username: USER_DATA.username,

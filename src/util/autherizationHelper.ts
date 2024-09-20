@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import {JwtPayload,userData} from './../types/index'
+import {JwtPayload,userLoginData} from './../types/index'
 
 const prisma = new PrismaClient();
 
 
-async function getJWTToken(USER_DATA :userData) {
+async function getJWTToken(USER_DATA :userLoginData) {
     const playload : Readonly<JwtPayload> = {
         USER_TYPE : USER_DATA.USER_TYPE,
         USER_NAME : USER_DATA.USER_NAME,
@@ -15,7 +15,7 @@ async function getJWTToken(USER_DATA :userData) {
 }
 
 
-export async function checkUserAndPassword(USER_DATA : Readonly<userData>) {
+export async function checkUserAndPassword(USER_DATA : Readonly<userLoginData>) {
     const userRes = await prisma.user.findUnique({
         where: { 
             username: USER_DATA.USER_NAME, 

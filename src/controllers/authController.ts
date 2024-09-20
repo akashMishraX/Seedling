@@ -4,7 +4,7 @@ import { createInvestor } from '../util/registerInvestorHelper';
 import { checkUserAndPassword } from '../util/autherizationHelper';
 import { verifyJWTToken } from './../middleware/checkAuthentication'
 import { JwtPayload } from 'jsonwebtoken';
-import {Token, key, userData, resResult} from './../types/index'
+import {Token, key, userLoginData, resResult} from './../types/index'
 
 
 const KEY : Readonly<key>={ 
@@ -12,7 +12,7 @@ const KEY : Readonly<key>={
 }
 
 export const userAuthLogin = async (req:Request , res:Response) => {
-    const USER_DATA : Readonly<userData> = {
+    const USER_DATA : Readonly<userLoginData> = {
         USER_TYPE : req.params.userType,
         USER_NAME : req.params.userName,
         PASSWORD : req.body.password,
