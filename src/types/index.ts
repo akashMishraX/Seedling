@@ -1,3 +1,4 @@
+import { Request , Response , NextFunction } from "express";
 import {z} from "zod";
 
 const userLoginDataSchema = z.object({
@@ -34,7 +35,17 @@ const userRegisterDataSchema = z.object({
     category:z.string(),
     categoryDescription:z.string()
 })
-
+const apiResponseSchema = z.object({
+    statusCode:z.number(),
+    message:z.string(),
+    data:z.string()
+})
+const customErrorSchema = z.object({
+    message:z.string(),
+    statusCode:z.number(),
+    errors:z.array(z.unknown()),
+    stack:z.string()
+})
 
 export type userLoginData = z.infer<typeof userLoginDataSchema>
 export type JwtPayload = z.infer<typeof JwtPayloadSchema>
@@ -44,3 +55,6 @@ export type Token = z.infer<typeof TokenSchema>
 export type userStartupRegisterData = z.infer<typeof userRegisterDataSchema>
 export type userInvestorRegisterData = Pick<userStartupRegisterData,'username'|'email'|'country'|'city'|'pincode'|'address_description'|'address_type'|'password'>
 export type categorySchema = Pick<userStartupRegisterData,'category'|'categoryDescription'>
+export type customErrorType = z.infer<typeof customErrorSchema>
+export type apiResponseType = z.infer<typeof apiResponseSchema>
+export type ControllerFunction = (req: Request, res: Response, next: NextFunction) => Promise<void>;

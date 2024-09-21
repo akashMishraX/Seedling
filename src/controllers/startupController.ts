@@ -1,4 +1,4 @@
-import {Request , Response} from 'express';
+import { Request , Response , NextFunction } from "express";
 import { PrismaClient } from '@prisma/client';
 import { categorySchema, userStartupRegisterData } from '../types';
 import { getOrCreateAllRoles } from '../util/allRolesHelper';
@@ -8,22 +8,20 @@ const prisma = new PrismaClient();
 
 //To get startup
 export class StartupController {
-    async getStartup(req: Request, res: Response){
+    getStartup = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!req || !res) {
-                throw new Error('Missing request or response objects');
-            }
-    
-            res.send(`Hello Startup`);
+            res.send('investor');
         } catch (error) {
-            console.error('Error in getStartup function:', error);
-            res.status(500).send({ error: 'Internal Server Error' });
+            next(error);
         }
     }
-    async getStartupProfile(req:Request , res:Response){
-        res.send('welcome to the startup profile');
+    getStartupProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            res.send('welcome to the investor profile');
+        } catch (error) {
+            next(error);
+        }
     }
-    
 }
 
 

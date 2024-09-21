@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken'
 import {Request ,  Response ,NextFunction} from 'express';
 import { JwtPayload } from 'jsonwebtoken'
-import {Token,key, userLoginData} from './../types/index'
+import {ControllerFunction, Token,key, userLoginData} from './../types/index'
+import { ApiError } from '../util/errorHandler';
 
 const KEY : Readonly<key>={ 
     SECRET_KEY : process.env.SECRET_KEY || ""
@@ -49,7 +50,5 @@ export class AuthMiddleware{
         next(); // Proceed to the next middleware or route handler
     };
 }
-
-
 
 

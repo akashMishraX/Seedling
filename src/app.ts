@@ -40,6 +40,6 @@ const BASE_URL_TRANSACTION = BASE_URL+'/transaction'
 app.use(BASE_URL_AUTH, userAuth);
 app.use(BASE_URL_STARTUP, authMiddleware.authenticate, startupRouter); // Protect this route
 app.use(BASE_URL_INVESTER, authMiddleware.authenticate, investerRouter); // Protect this route
-app.use(BASE_URL_NOTIFICATION, userAuth);
-app.use(BASE_URL_TRANSACTION, userAuth);
+app.use(BASE_URL_NOTIFICATION,authMiddleware.authenticate, userAuth);// Protect this route
+app.use(BASE_URL_TRANSACTION, authMiddleware.authenticate,userAuth);// Protect this route
 
