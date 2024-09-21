@@ -5,7 +5,7 @@ COPY tsconfig.json ./
 RUN npm i
 COPY . .
 RUN prisma generate
-RUN npm run prisma
+RUN npx prisma migrate init
 RUN npm run build
 EXPOSE 3000
 ENTRYPOINT [ "node","dist/server.js" ]

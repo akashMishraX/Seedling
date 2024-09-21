@@ -1,11 +1,14 @@
 import { Router } from "express";
-import { userAuthLogin ,userAuthRegister} from "../controllers/authController";
+import { AuthController } from "../controllers/authController";
+import {MethodsHandler} from "../util/methodHandler";
 
 const userAuth = Router();
 
+const methodHandler = new MethodsHandler();
+const authController = new AuthController();
 //auth route
-userAuth.post('/login/:userType/:userName',userAuthLogin)
-userAuth.post('/register/:userType',userAuthRegister)
+userAuth.post('/login/:userType/:userName',methodHandler.postHandler,authController.userAuthLogin)
+userAuth.post('/register/:userType',methodHandler.postHandler,authController.userAuthRegister)
 
 
 export default userAuth;
