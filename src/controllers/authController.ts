@@ -1,9 +1,7 @@
-import {Request ,  Response ,NextFunction} from 'express';
+import {Request ,  Response} from 'express';
 import { createStartup } from '../util/registerStartupHelper';
 import { createInvestor } from '../util/registerInvestorHelper';
 import { checkUserAndPassword } from '../util/autherizationHelper';
-import { verifyJWTToken } from './../middleware/checkAuthentication'
-import { JwtPayload } from 'jsonwebtoken';
 import {Token, key, userLoginData, resResult} from './../types/index'
 
 
@@ -71,22 +69,4 @@ export const userAuthRegister = async (req:Request , res:Response) => {
          });
     }
 }
-
-export async function authenticate(req:Request , res:Response, next :NextFunction){
-    const token = req.cookies.token;
-    if (!token) {
-        return res.status(401).send({ error: "Unauthorized: No token provided" });
-    }
-    
-    const decoded = await verifyJWTToken(token, KEY.SECRET_KEY) as JwtPayload;
-    if (!decoded) {
-        return res.status(401).send({ error: "Unauthorized: Invalid token" });
-    }
-    const USER_TYPE = req.headers['User-Type'] as string;
-    if(decoded.userType != USER_TYPE) {
-        return res.status(401).send({ error: "Unauthorized" });
-    }
-    next(); // Proceed to the next middleware or route handler
-};
-
 

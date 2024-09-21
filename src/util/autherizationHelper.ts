@@ -5,7 +5,7 @@ import {JwtPayload,userLoginData} from './../types/index'
 const prisma = new PrismaClient();
 
 
-async function getJWTToken(USER_DATA :userLoginData) {
+async function getJWTToken(USER_DATA : Readonly<userLoginData>) {
     const playload : Readonly<JwtPayload> = {
         USER_TYPE : USER_DATA.USER_TYPE,
         USER_NAME : USER_DATA.USER_NAME,

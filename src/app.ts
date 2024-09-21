@@ -4,7 +4,7 @@ import { Express } from "express";
 import startupRouter from "./routes/startupRoutes";
 import investerRouter from "./routes/investerRoutes";
 import userAuth from "./routes/authRoutes";
-import { authenticate } from "./controllers/authController";
+import { authenticate } from "./middleware/checkAuthentication";
 const app:Express = express();
 // middleware
 app.use(cookieParser());
