@@ -36,7 +36,7 @@ export const userAuthRegister = asyncHandler(async (req:Request , res:Response)=
     const helperInvestor = new InvestorHelperFunctions();
     const helperStartup= new StartupHelperFunctions();
     
-    var result:string = '';
+    var result:boolean = false;
     const USER_TYPE = req.params.userType;
     if (USER_TYPE == 'startup'){
         result = await helperStartup.createStartup(req.body,req.params.userType)
@@ -47,7 +47,10 @@ export const userAuthRegister = asyncHandler(async (req:Request , res:Response)=
     else {
         throw new ApiError({statusCode: 400, message: "Invalid user type", errors: [], stack: ''});
     }
-    const resData = new ApiResponse({statusCode : 200,  message : "User registered successfully",data : result, });
+    if (!result) {
+        throw new ApiError({statusCode: 500, message: "Internal server error", errors: [], stack: ''});
+    }
+    const resData = new ApiResponse({statusCode : 200,  message : "User registered successfully",data : null});
     res.status(resData.statusCode).json(resData);
 })
 

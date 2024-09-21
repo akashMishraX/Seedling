@@ -5,7 +5,7 @@ import { Express } from "express";
 import startupRouter from "./routes/startupRoutes";
 import investerRouter from "./routes/investerRoutes";
 import userAuth from "./routes/authRoutes";
-import { authenticate } from "./middleware/checkAuthentication";
+
 
 
 
@@ -16,10 +16,10 @@ const CLIENT_ON = process.env.CLIENT_URL
 const LIMIT = process.env.REQUEST_DATA_LIMIT
 
 // middleware
-app.use(cors({
-    origin:CLIENT_ON,
-    credentials: true,
-}));
+// app.use(cors({
+//     origin:CLIENT_ON,
+//     credentials: true,
+// }));
 app.use(express.json({limit:LIMIT}));
 app.use(express.urlencoded({extended: true,limit:LIMIT}));
 app.use(express.static('public'));
@@ -38,8 +38,8 @@ const BASE_URL_TRANSACTION = BASE_URL+'/transaction'
 
 // Route Handlers
 app.use(BASE_URL_AUTH, userAuth);
-app.use(BASE_URL_STARTUP, authenticate, startupRouter); // Protect this route
-app.use(BASE_URL_INVESTER, authenticate, investerRouter); // Protect this route
-app.use(BASE_URL_NOTIFICATION,authenticate, userAuth);// Protect this route
-app.use(BASE_URL_TRANSACTION, authenticate,userAuth);// Protect this route
+app.use(BASE_URL_STARTUP,  startupRouter); // Protect this route
+app.use(BASE_URL_INVESTER,  investerRouter); // Protect this route
+app.use(BASE_URL_NOTIFICATION,userAuth);// Protect this route
+app.use(BASE_URL_TRANSACTION, userAuth);// Protect this route
 

@@ -30,7 +30,7 @@ export class JwtHelperFunctions{
     }
 }
 
-export const authenticate = asyncHandler(async (req:Request , res:Response)=>{
+export const authenticate = asyncHandler(async (req:Request , res:Response , next:NextFunction)=>{
     const TOKEN : Readonly<Token> ={
         TOKEN_KEY : req.cookies.token
     }
@@ -40,13 +40,15 @@ export const authenticate = asyncHandler(async (req:Request , res:Response)=>{
     const helperJwt = new JwtHelperFunctions();
     const decoded = await helperJwt.verifyJWTToken(TOKEN.TOKEN_KEY, KEY.SECRET_KEY) as JwtPayload;
     if (!decoded) {
-        return res.status(401).send({ error: "Unauthorized: Invalid token" });
+        throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid token", errors: [], stack: ''});
     }
-    const USER_TYPE = req.headers['User-Type'] as string;
-    if(decoded.userType != USER_TYPE) {
-        return res.status(401).send({ error: "Unauthorized" });
+    const USER_TYPE = req.headers['user-type'] as string;
+    
+    if(decoded.USER_TYPE != USER_TYPE) {
+        throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
     }
     // Proceed to the next middleware or route handler
+    next()
 })
 
 
