@@ -30,11 +30,9 @@ export async function checkUserAndPassword(USER_DATA : Readonly<userLoginData>) 
             password: USER_DATA.PASSWORD
          },
     });
-
     if(!loginRes || userRes.username != USER_DATA.USER_NAME) {
         throw new Error('Invalid username or password');
     }
-
     const token = await getJWTToken(USER_DATA);
     return token
    

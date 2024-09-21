@@ -17,11 +17,17 @@ const BASE_URL = '/api/v0'
 const BASE_URL_STARTUP = BASE_URL+'/startup'
 const BASE_URL_INVESTER = BASE_URL+'/investor'
 const BASE_URL_AUTH = BASE_URL+'/auth'
+const BASE_URL_NOTIFICATION = BASE_URL+'/notification'
+const BASE_URL_TRANSACTION = BASE_URL+'/transaction'
+
+
 
 // Route Handlers
 
 app.use(BASE_URL_AUTH, userAuth);
 app.use(BASE_URL_STARTUP, authenticate, startupRouter); // Protect this route
 app.use(BASE_URL_INVESTER, authenticate, investerRouter); // Protect this route
+app.use(BASE_URL_NOTIFICATION, userAuth);
+app.use(BASE_URL_TRANSACTION, userAuth);
 
 export default app;

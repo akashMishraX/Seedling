@@ -23,20 +23,4 @@ export const getStartupProfile = (req:Request , res:Response) => {
 }
 
 
-async function createRoles() {
-    const role = await prisma.roles.createMany({
-        data: [
-            {
-                role_name: 'startup'
-            },
-            {
-                role_name: 'investor'
-            },
-            {
-                role_name: 'admin'
-            }
-
-        ]   
-    })
-}
 
