@@ -1,12 +1,11 @@
 import { Router } from "express";
-import { getInvestor, getInvestorProfile } from "../controllers/inverstorController";
-import { authenticate } from "../controllers/authController";
+import { InvestorController } from "../controllers/inverstorController";
 const investerRouter = Router();
 
-
+const investorController = new InvestorController();
 //Inverstors route
-investerRouter.get('/',getInvestor)
-investerRouter.get('/profile',getInvestorProfile)
+investerRouter.get('/',investorController.getInvestor)
+investerRouter.get('/profile',investorController.getInvestorProfile)
 
 
 export default investerRouter;

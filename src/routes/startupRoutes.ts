@@ -1,13 +1,12 @@
 import { Router } from "express";
-import { getStartup, getStartupProfile } from "../controllers/startupController";
-import { authenticate } from "../controllers/authController";
+import { StartupController } from "../controllers/startupController";
 
 const startupRouter = Router();
 
-
+const startupController = new StartupController();
 //Startup route
-startupRouter.get('/',getStartup)
-startupRouter.get('/profile',getStartupProfile)
+startupRouter.get('/',startupController.getStartup)
+startupRouter.get('/profile',startupController.getStartupProfile)
 
 
 export default startupRouter;

@@ -18,6 +18,5 @@ export async function getOrCreateAllRoles(role_name:string) {
         ]
     })
     console.log('All roles created successfully');
-    return role_name
-       
+    return role_name 
 }

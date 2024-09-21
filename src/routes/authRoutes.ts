@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { userAuthLogin ,userAuthRegister} from "../controllers/authController";
+import { AuthController } from "../controllers/authController";
 
 const userAuth = Router();
-
+const authController = new AuthController();
 //auth route
-userAuth.post('/login/:userType/:userName',userAuthLogin)
-userAuth.post('/register/:userType',userAuthRegister)
+userAuth.post('/login/:userType/:userName',authController.userAuthLogin)
+userAuth.post('/register/:userType',authController.userAuthRegister)
 
 
 export default userAuth;
