@@ -5,10 +5,10 @@ import { Express } from "express";
 import startupRouter from "./routes/startupRoutes";
 import investerRouter from "./routes/investerRoutes";
 import userAuth from "./routes/authRoutes";
-import { AuthMiddleware } from "./middleware/checkAuthentication";
+import { authenticate } from "./middleware/checkAuthentication";
 
 
-const authMiddleware = new AuthMiddleware();
+
 export const app:Express = express();
 
 export const PORT = process.env.PORT || 3000;
@@ -38,8 +38,8 @@ const BASE_URL_TRANSACTION = BASE_URL+'/transaction'
 
 // Route Handlers
 app.use(BASE_URL_AUTH, userAuth);
-app.use(BASE_URL_STARTUP, authMiddleware.authenticate, startupRouter); // Protect this route
-app.use(BASE_URL_INVESTER, authMiddleware.authenticate, investerRouter); // Protect this route
-app.use(BASE_URL_NOTIFICATION,authMiddleware.authenticate, userAuth);// Protect this route
-app.use(BASE_URL_TRANSACTION, authMiddleware.authenticate,userAuth);// Protect this route
+app.use(BASE_URL_STARTUP, authenticate, startupRouter); // Protect this route
+app.use(BASE_URL_INVESTER, authenticate, investerRouter); // Protect this route
+app.use(BASE_URL_NOTIFICATION,authenticate, userAuth);// Protect this route
+app.use(BASE_URL_TRANSACTION, authenticate,userAuth);// Protect this route
 

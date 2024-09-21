@@ -15,10 +15,7 @@ const JwtPayloadSchema = z.object({
 const keySchema = z.object({
     SECRET_KEY : z.string()
 })
-const resResultSchema = z.object({
-    RESPONSE : z.string().nullable(),
-    ERROR : z.string().nullable()
-})
+
 const TokenSchema = z.object({
     TOKEN_KEY : z.string().nullable()
 })
@@ -38,7 +35,7 @@ const userRegisterDataSchema = z.object({
 const apiResponseSchema = z.object({
     statusCode:z.number(),
     message:z.string(),
-    data:z.string()
+    data:z.string().nullable(),
 })
 const customErrorSchema = z.object({
     message:z.string(),
@@ -50,7 +47,6 @@ const customErrorSchema = z.object({
 export type userLoginData = z.infer<typeof userLoginDataSchema>
 export type JwtPayload = z.infer<typeof JwtPayloadSchema>
 export type key = z.infer<typeof keySchema>
-export type resResult = z.infer<typeof resResultSchema>
 export type Token = z.infer<typeof TokenSchema>
 export type userStartupRegisterData = z.infer<typeof userRegisterDataSchema>
 export type userInvestorRegisterData = Pick<userStartupRegisterData,'username'|'email'|'country'|'city'|'pincode'|'address_description'|'address_type'|'password'>

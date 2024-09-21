@@ -2,24 +2,15 @@ import {NextFunction, Request , Response} from 'express';
 import { PrismaClient } from '@prisma/client';
 import { getOrCreateAllRoles } from '../util/allRolesHelper';
 import { userInvestorRegisterData } from '../types';
+import { asyncHandler } from '../util/asyncHandler';
 const prisma = new PrismaClient();
 
-export class InvestorController{
-    getInvestor = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            res.send('investor');
-        } catch (error) {
-            next(error);
-        }
-    }
-    getInvestorProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            res.send('welcome to the investor profile');
-        } catch (error) {
-            next(error);
-        }
-    }
-}  
+export const getInvestor = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    res.send('investor');
+})
+export const getInvestorProfile = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    res.send('welcome to the investor profile');
+})
 
 
 export class InvestorHelperFunctions{

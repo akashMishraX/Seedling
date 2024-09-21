@@ -1,105 +1,84 @@
 import {Request ,  Response} from 'express';
 import { StartupHelperFunctions } from './startupController'
 import { InvestorHelperFunctions } from './inverstorController'
-import {Token, key, resResult, userLoginData} from './../types/index'
+import {Token, key, userLoginData} from './../types/index'
 import { PrismaClient } from '@prisma/client';
+import { ApiResponse } from '../util/responseHandler';
+import { asyncHandler } from '../util/asyncHandler';
 import { JwtHelperFunctions } from '../middleware/checkAuthentication';
-
+import { ApiError } from '../util/errorHandler';
 
 const prisma = new PrismaClient();
-
-
 
 const KEY : Readonly<key>={ 
     SECRET_KEY : process.env.SECRET_KEY || ""
 }
-export class AuthController{
-    async userAuthLogin(req:Request , res:Response){
-        const USER_DATA : Readonly<userLoginData> = {
-            USER_TYPE : req.params.userType,
-            USER_NAME : req.params.userName,
-            PASSWORD : req.body.password,
-            SECRET_KEY : KEY.SECRET_KEY
-        }
-        try {
-            const checkUserAndPassword = new AuthHelperFunctions();
-            const token : Readonly<Token> = {
-                TOKEN_KEY : await checkUserAndPassword.checkUserAndPassword(USER_DATA)
-            }
-            res.cookie("token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-            });
-            const resData : Readonly<resResult> = {
-                RESPONSE : token.TOKEN_KEY,
-                ERROR : null
-            }
-            res.status(200).send(resData);
-        } catch (error) {
-            const resData : Readonly<resResult> = { 
-                RESPONSE : null,
-                ERROR:  `${error}` 
-            }
-            res.status(500).send(resData);
-        }
-        
+// asyncHandler()
+export const userAuthLogin =asyncHandler(async (req:Request , res:Response)=>{
+    const USER_DATA : Readonly<userLoginData> = {
+        USER_TYPE : req.params.userType,
+        USER_NAME : req.params.userName,
+        PASSWORD : req.body.password,
+        SECRET_KEY : KEY.SECRET_KEY
     }
-    async userAuthRegister(req:Request , res:Response){
-        const helperInvestor = new InvestorHelperFunctions();
-        const helperStartup= new StartupHelperFunctions();
+    const token : Readonly<Token> = {
+        TOKEN_KEY : await checkUserAndPassword(USER_DATA)
+    }
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+    const resData = new ApiResponse({statusCode : 200, message : "User logged in successfully",data : token.TOKEN_KEY});
+    res.status(200).send(resData);
+})
+export const userAuthRegister = asyncHandler(async (req:Request , res:Response)=>{
+    const helperInvestor = new InvestorHelperFunctions();
+    const helperStartup= new StartupHelperFunctions();
     
-        try {
-            var result:string = '';
-            const USER_TYPE = req.params.userType;
-            if (USER_TYPE == 'startup'){
-                result = await helperStartup.createStartup(req.body,req.params.userType)
-            }
-            else if (USER_TYPE == 'investor'){
-                result = await helperInvestor.createInvestor(req.body,req.params.userType)
-            }
-            else {
-                res.status(400).send({ 
-                    response : null,
-                    error: 'Invalid user type'
-                 });
-            }
-            res.status(200).send({
-                response : result,
-                error : null
-            });
-        } catch (error) {
-            res.status(500).send({ 
-                response : null,
-                error:  `${error}`
-             });
-        }
+    var result:string = '';
+    const USER_TYPE = req.params.userType;
+    if (USER_TYPE == 'startup'){
+        result = await helperStartup.createStartup(req.body,req.params.userType)
     }
-}
+    else if (USER_TYPE == 'investor'){
+        result = await helperInvestor.createInvestor(req.body,req.params.userType)
+    }
+    else {
+        throw new ApiError({statusCode: 400, message: "Invalid user type", errors: [], stack: ''});
+    }
+    const resData = new ApiResponse({statusCode : 200,  message : "User registered successfully",data : result, });
+    res.status(resData.statusCode).json(resData);
+})
 
-export class AuthHelperFunctions{
-    async checkUserAndPassword(USER_DATA : Readonly<userLoginData>) {
+
+export const checkUserAndPassword =async (USER_DATA : Readonly<userLoginData>)=>{
+    try {
         const userRes = await prisma.user.findUnique({
             where: { 
                 username: USER_DATA.USER_NAME, 
             },
         });
         if (!userRes) {
-            throw new Error('Invalid username or password');
+            throw new ApiError({statusCode: 404, message: "User not found", errors: [], stack: ''});
         }
         const loginRes = await prisma.login.findFirst({
             where: { 
                 user_id: userRes.id,
                 password: USER_DATA.PASSWORD
-             },
+                },
         });
         if(!loginRes || userRes.username != USER_DATA.USER_NAME) {
-            throw new Error('Invalid username or password');
+            throw new ApiError({statusCode: 401, message: "Invalid credentials", errors: [], stack: ''});
         }
         const helperJwt = new JwtHelperFunctions();
         const token = await helperJwt.getJWTToken(USER_DATA);
-        return token      
+        return token
+    } catch (error) {
+        throw new ApiError({statusCode: 500, message: "Internal server error", errors: [], stack: ''});
     }
-    
+         
 }
+     
+
 
