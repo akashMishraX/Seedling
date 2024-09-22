@@ -1,13 +1,12 @@
 import { Router } from "express";
-import { StartupController } from "../controllers/startupController";
-import {MethodsHandler} from "../util/methodHandler";
+import { getStartup, getStartupProfile } from "../controllers/startupController";
+import { authenticate } from "../middleware/checkAuthentication";
+
 const startupRouter = Router();
 
-const startupController = new StartupController();
-const methodHandler = new MethodsHandler();
-//Startup route
-startupRouter.get('/',methodHandler.getHandler,startupController.getStartup)
-startupRouter.get('/profile',methodHandler.getHandler,startupController.getStartupProfile)
 
+//Startup route
+startupRouter.route('/').get(authenticate,getStartup)
+startupRouter.route('/profile').get(authenticate,getStartupProfile)
 
 export default startupRouter;

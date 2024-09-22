@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
 import {Request ,  Response ,NextFunction} from 'express';
 import { JwtPayload } from 'jsonwebtoken'
-import {ControllerFunction, Token,key, userLoginData} from './../types/index'
+import {Token,key, userLoginData} from './../types/index'
 import { ApiError } from '../util/errorHandler';
+import { asyncHandler } from '../util/asyncHandler';
 
 const KEY : Readonly<key>={ 
     SECRET_KEY : process.env.SECRET_KEY || ""
@@ -25,30 +26,31 @@ export class JwtHelperFunctions{
             return jwt.verify(token,SECERT_KEY);
         } catch (error) {
             return null
-        }
-        
+        }   
     }
- 
 }
-export class AuthMiddleware{
-    async authenticate(req:Request , res:Response, next :NextFunction){
-        const TOKEN : Readonly<Token> ={
-            TOKEN_KEY : req.cookies.token
-        }
-        if (!TOKEN.TOKEN_KEY) {
-            return res.status(401).send({ error: "Unauthorized: No token provided" });
-        }
-        const helperJwt = new JwtHelperFunctions();
-        const decoded = await helperJwt.verifyJWTToken(TOKEN.TOKEN_KEY, KEY.SECRET_KEY) as JwtPayload;
-        if (!decoded) {
-            return res.status(401).send({ error: "Unauthorized: Invalid token" });
-        }
-        const USER_TYPE = req.headers['User-Type'] as string;
-        if(decoded.userType != USER_TYPE) {
-            return res.status(401).send({ error: "Unauthorized" });
-        }
-        next(); // Proceed to the next middleware or route handler
-    };
-}
+
+export const authenticate = asyncHandler(async (req:Request , res:Response , next:NextFunction)=>{
+    const TOKEN : Readonly<Token> ={
+        TOKEN_KEY : req.cookies.token
+    }
+    if (!TOKEN.TOKEN_KEY) {
+        throw new ApiError({statusCode: 401, message: "Unauthorized: No token provided", errors: [], stack: ''});
+    }
+    const helperJwt = new JwtHelperFunctions();
+    const decoded = await helperJwt.verifyJWTToken(TOKEN.TOKEN_KEY, KEY.SECRET_KEY) as JwtPayload;
+    if (!decoded) {
+        throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid token", errors: [], stack: ''});
+    }
+    const USER_TYPE = req.headers['user-type'] as string;
+    
+    if(decoded.USER_TYPE != USER_TYPE) {
+        throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
+    }
+    // Proceed to the next middleware or route handler
+    next()
+})
+
+
 
 
