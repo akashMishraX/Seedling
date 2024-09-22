@@ -4,7 +4,7 @@ export class ApiResponse {
     statusCode: number
     success: boolean
     message: string
-    data: string | null
+    data:  {}
     constructor(RESPONSE_DATA: Readonly<apiResponseType>) {
         this.statusCode = RESPONSE_DATA.statusCode
         this.data = RESPONSE_DATA.data

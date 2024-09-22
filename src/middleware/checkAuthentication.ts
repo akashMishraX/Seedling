@@ -1,20 +1,30 @@
 import jwt from 'jsonwebtoken'
+import { PrismaClient } from '@prisma/client';
 import {Request ,  Response ,NextFunction} from 'express';
 import { JwtPayload } from 'jsonwebtoken'
 import {Token,key, userLoginData} from './../types/index'
 import { ApiError } from '../util/errorHandler';
 import { asyncHandler } from '../util/asyncHandler';
 
+const prisma = new PrismaClient();
 const KEY : Readonly<key>={ 
     SECRET_KEY : process.env.SECRET_KEY || ""
 }
 
 export class JwtHelperFunctions{
     async getJWTToken(USER_DATA : Readonly<userLoginData>) {
+        const userRes = await prisma.user.findUnique({
+            where: { 
+                username: USER_DATA.USER_NAME, 
+            },
+        });
+        if (!userRes) {
+            throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
+        }
+        const __ID = userRes.id;
         const playload : Readonly<JwtPayload> = {
             USER_TYPE : USER_DATA.USER_TYPE,
-            USER_NAME : USER_DATA.USER_NAME,
-            PASSWORD : USER_DATA.PASSWORD
+            __ID : __ID
         }
         return jwt.sign(playload,USER_DATA.SECRET_KEY); 
     }
@@ -42,12 +52,14 @@ export const authenticate = asyncHandler(async (req:Request , res:Response , nex
     if (!decoded) {
         throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid token", errors: [], stack: ''});
     }
+
     const USER_TYPE = req.headers['user-type'] as string;
-    
+    console.log(decoded)
     if(decoded.USER_TYPE != USER_TYPE) {
         throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
     }
     // Proceed to the next middleware or route handler
+    res.locals.__ID = decoded.__ID;
     next()
 })
 

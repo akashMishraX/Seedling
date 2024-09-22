@@ -75,7 +75,7 @@ CREATE TABLE "Post" (
     "content" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "startup_id" INTEGER NOT NULL,
+    "project_id" INTEGER,
 
     CONSTRAINT "Post_pkey" PRIMARY KEY ("post_id")
 );
@@ -232,7 +232,7 @@ ALTER TABLE "Startup" ADD CONSTRAINT "Startup_founder_id_fkey" FOREIGN KEY ("fou
 ALTER TABLE "Startup" ADD CONSTRAINT "Startup_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("category_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Post" ADD CONSTRAINT "Post_startup_id_fkey" FOREIGN KEY ("startup_id") REFERENCES "Startup"("startup_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Post" ADD CONSTRAINT "Post_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project"("project_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_startup_id_fkey" FOREIGN KEY ("startup_id") REFERENCES "Startup"("startup_id") ON DELETE RESTRICT ON UPDATE CASCADE;

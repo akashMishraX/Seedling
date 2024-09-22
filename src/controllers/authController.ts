@@ -29,7 +29,7 @@ export const userAuthLogin =asyncHandler(async (req:Request , res:Response)=>{
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
     });
-    const resData = new ApiResponse({statusCode : 200, message : "User logged in successfully",data : token.TOKEN_KEY});
+    const resData = new ApiResponse({statusCode : 200, message : "User logged in successfully",data : token});
     res.status(200).send(resData);
 })
 export const userAuthRegister = asyncHandler(async (req:Request , res:Response)=>{
@@ -50,7 +50,7 @@ export const userAuthRegister = asyncHandler(async (req:Request , res:Response)=
     if (!result) {
         throw new ApiError({statusCode: 500, message: "Internal server error", errors: [], stack: ''});
     }
-    const resData = new ApiResponse({statusCode : 200,  message : "User registered successfully",data : null});
+    const resData = new ApiResponse({statusCode : 200,  message : "User registered successfully",data : {}});
     res.status(resData.statusCode).json(resData);
 })
 

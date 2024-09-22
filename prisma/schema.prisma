@@ -71,7 +71,6 @@ model Startup {
   founder_id Int  @unique
 
   //relationships-> many-to-one
-  Post    Post[]
   Project Project[]
   pledge  Pledge[]
   comment Comment[]
@@ -98,8 +97,8 @@ model Post {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  startup    Startup @relation(fields: [startup_id], references: [startup_id])
-  startup_id Int
+  Project    Project? @relation(fields: [project_id], references: [project_id])
+  project_id Int?
 }
 
 model Project {
@@ -118,6 +117,7 @@ model Project {
   startup_id Int
 
   // relationship many-to-one
+  Post   Post[]
   Reward Reward[]
   Update Update[]
 }
