@@ -50,7 +50,8 @@ const projectSchema = z.object({
     goal_amount:z.number({message: "Invalid goal amount"}),
     raised_amount:z.number({message : "Invalid raised amount"}),
     start_date:z.string().refine(date => !isNaN(Date.parse(date)), {message: "Invalid start date"}),
-    end_date: z.string().refine(date => !isNaN(Date.parse(date)), {message: "Invalid end date"})
+    end_date: z.string().refine(date => !isNaN(Date.parse(date)), {message: "Invalid end date"}),
+    active : z.boolean(),
 })
 const postSchema = z.object({
     project_id:z.number(),
@@ -73,7 +74,7 @@ export type ControllerFunction = (req: Request, res: Response, next: NextFunctio
 type projectMainType = z.infer<typeof projectSchema>
 export type projectType = Pick<projectMainType,'__ID'|'name'|'description'|'goal_amount'|'raised_amount'|'start_date'|'end_date'>
 export type projectReadOrDeleteType = Pick<projectMainType,'project_id'>
-export type projectUpdateType = Pick<projectMainType,'project_id'| 'name'|'description'|'goal_amount'|'raised_amount'|'start_date'|'end_date'>
+export type projectUpdateType = Pick<projectMainType,'project_id'| 'name'|'description'|'goal_amount'|'raised_amount'|'start_date'|'end_date' | 'active'>
 
 type postMainType = z.infer<typeof postSchema>
 export type postType = Pick<postMainType, 'project_id' | 'title' | 'content'>

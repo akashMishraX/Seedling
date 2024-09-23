@@ -4,7 +4,7 @@ CREATE TABLE "User" (
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "role_id" INTEGER,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -19,7 +19,7 @@ CREATE TABLE "Address" (
     "address_description" TEXT NOT NULL,
     "address_type" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "user_id" INTEGER NOT NULL,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("address_id")
@@ -30,7 +30,7 @@ CREATE TABLE "Roles" (
     "role_id" SERIAL NOT NULL,
     "role_name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Roles_pkey" PRIMARY KEY ("role_id")
 );
@@ -40,7 +40,7 @@ CREATE TABLE "Login" (
     "id" SERIAL NOT NULL,
     "password" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "user_id" INTEGER NOT NULL,
 
     CONSTRAINT "Login_pkey" PRIMARY KEY ("id")
@@ -50,7 +50,7 @@ CREATE TABLE "Login" (
 CREATE TABLE "Startup" (
     "startup_id" SERIAL NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "founder_id" INTEGER NOT NULL,
     "category_id" INTEGER,
 
@@ -63,7 +63,7 @@ CREATE TABLE "Category" (
     "category_name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("category_id")
 );
@@ -74,8 +74,8 @@ CREATE TABLE "Post" (
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "project_id" INTEGER,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "project_id" INTEGER NOT NULL,
 
     CONSTRAINT "Post_pkey" PRIMARY KEY ("post_id")
 );
@@ -89,9 +89,10 @@ CREATE TABLE "Project" (
     "raised_amount" DOUBLE PRECISION NOT NULL,
     "start_date" TIMESTAMP(3) NOT NULL,
     "end_date" TIMESTAMP(3) NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
     "status" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "startup_id" INTEGER NOT NULL,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("project_id")
@@ -105,7 +106,7 @@ CREATE TABLE "Reward" (
     "amount" DOUBLE PRECISION NOT NULL,
     "quantity_avaliable" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "project_id" INTEGER NOT NULL,
 
     CONSTRAINT "Reward_pkey" PRIMARY KEY ("reward_id")
@@ -117,7 +118,7 @@ CREATE TABLE "Update" (
     "title" TEXT NOT NULL,
     "decription" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "project_id" INTEGER NOT NULL,
 
     CONSTRAINT "Update_pkey" PRIMARY KEY ("update_id")
@@ -129,7 +130,7 @@ CREATE TABLE "Investor" (
     "total_pledged" INTEGER NOT NULL DEFAULT 0,
     "total_reward" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "investor_id" INTEGER NOT NULL,
 
     CONSTRAINT "Investor_pkey" PRIMARY KEY ("id")
@@ -141,11 +142,11 @@ CREATE TABLE "Pledge" (
     "amount" DOUBLE PRECISION NOT NULL,
     "message" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "investor_id" INTEGER NOT NULL,
-    "userId" INTEGER,
     "startup_id" INTEGER NOT NULL,
     "reward_id" INTEGER NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "Pledge_pkey" PRIMARY KEY ("pledge_id")
 );
@@ -158,7 +159,7 @@ CREATE TABLE "Transaction" (
     "transaction_date" TIMESTAMP(3) NOT NULL,
     "payment_gateway_response_data" JSONB NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "pledge_id" INTEGER NOT NULL,
 
     CONSTRAINT "Transaction_pkey" PRIMARY KEY ("transaction_id")
@@ -173,7 +174,7 @@ CREATE TABLE "Comment" (
     "dislikes_count" INTEGER NOT NULL,
     "is_edited" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "startup_id" INTEGER,
     "investorId" INTEGER,
 
@@ -189,7 +190,7 @@ CREATE TABLE "Notification" (
     "refrence_type" TEXT NOT NULL,
     "is_read" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "user_id" INTEGER NOT NULL,
 
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("notification_id")
@@ -232,7 +233,7 @@ ALTER TABLE "Startup" ADD CONSTRAINT "Startup_founder_id_fkey" FOREIGN KEY ("fou
 ALTER TABLE "Startup" ADD CONSTRAINT "Startup_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("category_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Post" ADD CONSTRAINT "Post_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project"("project_id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Post" ADD CONSTRAINT "Post_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project"("project_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_startup_id_fkey" FOREIGN KEY ("startup_id") REFERENCES "Startup"("startup_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -250,13 +251,13 @@ ALTER TABLE "Investor" ADD CONSTRAINT "Investor_investor_id_fkey" FOREIGN KEY ("
 ALTER TABLE "Pledge" ADD CONSTRAINT "Pledge_investor_id_fkey" FOREIGN KEY ("investor_id") REFERENCES "Investor"("investor_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Pledge" ADD CONSTRAINT "Pledge_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Pledge" ADD CONSTRAINT "Pledge_startup_id_fkey" FOREIGN KEY ("startup_id") REFERENCES "Startup"("startup_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Pledge" ADD CONSTRAINT "Pledge_reward_id_fkey" FOREIGN KEY ("reward_id") REFERENCES "Reward"("reward_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Pledge" ADD CONSTRAINT "Pledge_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_pledge_id_fkey" FOREIGN KEY ("pledge_id") REFERENCES "Pledge"("pledge_id") ON DELETE RESTRICT ON UPDATE CASCADE;

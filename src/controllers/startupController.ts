@@ -69,13 +69,36 @@ export const deleteProjectController = asyncHandler(async (req: Request, res: Re
         project_id  : parseInt(req.params.projectId)
     }
     const helperStartup =  new StartupHelperFunctions()
-    await helperStartup.deleteProject(DELETE_PROJECT_DATA)
+    const result = await helperStartup.deleteProject(DELETE_PROJECT_DATA)
+    if(!result){
+        throw new ApiError({statusCode: 500, message: "Internal server error", errors: [], stack: ''});
+    }
+    const response = new ApiResponse({statusCode: 200, message: "Project successfully Deleted", data: {}})
+    res.status(response.statusCode).json(response)
 })
 export const updateProjectController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const USER_TYPE = req.headers['user-type'] as string;
     if(USER_TYPE != 'startup') {
         throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
     }
+    const UPDATE_PROJECT_DATA : Partial<projectUpdateType> = {
+        project_id: parseInt(req.params.projectId),
+        name: req.body.name,
+        description: req.body.description,
+        goal_amount: req.body.goal_amount,
+        raised_amount: req.body.raised_amount,
+        start_date: req.body.start_date,
+        end_date: req.body.end_date,
+        active: req.body.active
+    }
+    const helperStartup =  new StartupHelperFunctions()
+    const result = await helperStartup.updateProject(UPDATE_PROJECT_DATA)
+    if(!result){
+        throw new ApiError({statusCode: 500, message: "Internal server error", errors: [], stack: ''});
+    }
+    const response = new ApiResponse({statusCode: 200, message: "Project successfully Updated", data: result})
+    res.status(response.statusCode).json(response)
+
 })
 
 
@@ -257,21 +280,38 @@ export class StartupHelperFunctions{
         }
         return projectRes
     }
-    deleteProject = async (DELETE_PROJECT_DATA:Readonly<projectReadOrDeleteType>):Promise<ApiResponse> => {
+    deleteProject = async (DELETE_PROJECT_DATA:Readonly<projectReadOrDeleteType>):Promise<Boolean> => {
         const projectRes = await prisma.project.findUnique({
             where: { project_id: DELETE_PROJECT_DATA.project_id},
         })
         if (!projectRes) {
             throw new ApiError({statusCode: 404, message: "Project not found", errors: [], stack: ''});
         }
-        await prisma.project.delete({
-            where: { project_id: DELETE_PROJECT_DATA.project_id},
+        if(projectRes.active){
+            throw new ApiError({statusCode: 400, message: "Project is active", errors: [], stack: ''});
+        }
+
+        //delete all post,reward and upadtes
+        const result = await prisma.$transaction(async (tx) => {
+            await tx.post.deleteMany({
+                where :{ project_id: DELETE_PROJECT_DATA.project_id } 
+            })
+            await tx.reward.deleteMany({
+                where :{ project_id: DELETE_PROJECT_DATA.project_id } 
+            })
+            await tx.update.deleteMany({
+                where :{ project_id: DELETE_PROJECT_DATA.project_id } 
+            })
+            const deletedProject = await tx.project.delete({
+                where: { project_id: DELETE_PROJECT_DATA.project_id },
+            })
+            return true
         })
-        return new ApiResponse({statusCode: 200, message: "Project deleted", data: {}})
+        return result
     }
-    updateProject = async (UPDATE_PROJECT_DATA:Partial<projectUpdateType>):Promise<ApiResponse> => {
+    updateProject = async (UPDATE_PROJECT_DATA:Partial<projectUpdateType>):Promise<Boolean> => {
         const projectRes = await prisma.project.findUnique({
-            where: { project_id: UPDATE_PROJECT_DATA.project_id},
+            where: { project_id: UPDATE_PROJECT_DATA.project_id },
         })
         if (!projectRes) {
             throw new ApiError({statusCode: 404, message: "Project not found", errors: [], stack: ''});
@@ -285,14 +325,20 @@ export class StartupHelperFunctions{
             if (UPDATE_PROJECT_DATA.raised_amount !== undefined) {updateData.raised_amount = UPDATE_PROJECT_DATA.raised_amount;}
             if (UPDATE_PROJECT_DATA.start_date !== undefined) {updateData.start_date = UPDATE_PROJECT_DATA.start_date;}
             if (UPDATE_PROJECT_DATA.end_date !== undefined) {updateData.end_date = UPDATE_PROJECT_DATA.end_date;}
+            if (UPDATE_PROJECT_DATA.active !== undefined) {updateData.active = UPDATE_PROJECT_DATA.active;}
+
             return updateData
         }       
         const updateData = updateDataFunction() 
-        await prisma.project.update({
-            where: { project_id: UPDATE_PROJECT_DATA.project_id},
-            data: updateData
-        })
-        return new ApiResponse({statusCode: 200, message: "Project updated", data: {}})
+        if(Object.keys(updateData).length > 0) {
+            updateData
+            await prisma.project.update({
+                where: { project_id: UPDATE_PROJECT_DATA.project_id },
+                data: updateData
+            })
+        }
+        
+        return true
     }
 
     //POSTS
@@ -314,7 +360,7 @@ export class StartupHelperFunctions{
     }
     readPost = async (READ_POST_DATA:Readonly<postReadOrDeleteType>):Promise<object> => {
         const postRes = await prisma.post.findUnique({
-            where: { post_id: READ_POST_DATA.post_id , project_id: READ_POST_DATA.project_id },
+            where: { post_id: READ_POST_DATA.post_id},
         })
         if (!postRes) {
             throw new ApiError({statusCode: 404, message: "Post not found", errors: [], stack: ''});
@@ -334,8 +380,8 @@ export class StartupHelperFunctions{
         return new ApiResponse({statusCode: 200, message: "Post deleted", data: {}})
     }
     updatePost = async (UPDATE_POST_DATA:Partial<postUpdateType>):Promise<ApiResponse> => {
-        const postRes = await prisma.post.findUnique({
-            where:{ post_id: UPDATE_POST_DATA.post_id , project_id: UPDATE_POST_DATA.project_id},
+        const postRes = await prisma.post.findFirst({
+            where:{ post_id: UPDATE_POST_DATA.post_id, project_id: UPDATE_POST_DATA.project_id},
         })
         if (!postRes) {
             throw new ApiError({statusCode: 404, message: "Post not found", errors: [], stack: ''});
