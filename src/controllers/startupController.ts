@@ -52,6 +52,10 @@ export const createProjectController = asyncHandler(async (req: Request, res: Re
     res.status(response.statusCode).json(response)
 })
 export const readProjectController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const USER_TYPE = req.headers['user-type'] as string;
+    if(USER_TYPE != 'startup') {
+        throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
+    }
     const READ_PROJECT_DATA:Readonly<projectReadOrDeleteType>= {
         project_id  : parseInt(req.params.projectId)
     }
@@ -65,6 +69,10 @@ export const readProjectController = asyncHandler(async (req: Request, res: Resp
     res.status(response.statusCode).json(response)
 })
 export const deleteProjectController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const USER_TYPE = req.headers['user-type'] as string;
+    if(USER_TYPE != 'startup') {
+        throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
+    }
     const DELETE_PROJECT_DATA:Readonly<projectReadOrDeleteType>= {
         project_id  : parseInt(req.params.projectId)
     }
@@ -147,12 +155,37 @@ export const deletePostController = asyncHandler(async (req: Request, res: Respo
     if(USER_TYPE != 'startup') {
         throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
     }
+    const DELETE_POST_DATA:Readonly<postReadOrDeleteType>= {
+        project_id  : parseInt(req.params.projectId),
+        post_id: parseInt(req.params.postId)
+    }
+    const helperStartup =  new StartupHelperFunctions()
+    const result = await helperStartup.deletePost(DELETE_POST_DATA)
+    if(!result){
+        throw new ApiError({statusCode: 500, message: "Internal server error", errors: [], stack: ''});
+    }
+    const response = new ApiResponse({statusCode: 200, message: "Post successfully Deleted", data: {}})
+    res.status(response.statusCode).json(response)
 })
 export const updatePostController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const USER_TYPE = req.headers['user-type'] as string;
     if(USER_TYPE != 'startup') {
         throw new ApiError({statusCode: 401, message: "Unauthorized: Invalid User", errors: [], stack: ''});
     }
+    const UPDATE_POST_DATA : Partial<postUpdateType> = {
+        project_id: parseInt(req.params.projectId),
+        post_id: parseInt(req.params.postId),
+        title : req.body.title,
+        content : req.body.content
+    }
+    const helperStartup =  new StartupHelperFunctions()
+    const result = await helperStartup.updatePost(UPDATE_POST_DATA)
+    if(!result){
+        throw new ApiError({statusCode: 500, message: "Internal server error", errors: [], stack: ''});
+    }
+    const response = new ApiResponse({statusCode: 200, message: "Post successfully Updated", data: {}})
+    res.status(response.statusCode).json(response)
+
 })
 
 
@@ -331,7 +364,6 @@ export class StartupHelperFunctions{
         }       
         const updateData = updateDataFunction() 
         if(Object.keys(updateData).length > 0) {
-            updateData
             await prisma.project.update({
                 where: { project_id: UPDATE_PROJECT_DATA.project_id },
                 data: updateData
@@ -379,28 +411,30 @@ export class StartupHelperFunctions{
         })
         return new ApiResponse({statusCode: 200, message: "Post deleted", data: {}})
     }
-    updatePost = async (UPDATE_POST_DATA:Partial<postUpdateType>):Promise<ApiResponse> => {
+    updatePost = async (UPDATE_POST_DATA:Partial<postUpdateType>):Promise<Boolean> => {
         const postRes = await prisma.post.findFirst({
             where:{ post_id: UPDATE_POST_DATA.post_id, project_id: UPDATE_POST_DATA.project_id},
         })
         if (!postRes) {
             throw new ApiError({statusCode: 404, message: "Post not found", errors: [], stack: ''});
         } 
-        function updateDataFunction():Partial<postUpdateType> {
-            const updateData: { title?: string, content?: string } = {};
         
+        function updateDataFunction():Partial<postUpdateType> {
+            const updateData: Partial<postUpdateType> = {};
             if (UPDATE_POST_DATA.title !== undefined) {updateData.title = UPDATE_POST_DATA.title;} 
             if (UPDATE_POST_DATA.content !== undefined) {updateData.content = UPDATE_POST_DATA.content;}
+
             return updateData
-        }
-        const updateData = updateDataFunction()
+        }       
+        const updateData = updateDataFunction() 
+ 
         if (Object.keys(updateData).length > 0) {
             await prisma.post.update({
                 where: { post_id : UPDATE_POST_DATA.post_id, project_id: UPDATE_POST_DATA.project_id},
                 data: updateData
             })
         }
-        return new ApiResponse({statusCode: 200, message: "Post updated", data: {}})
+        return true
     }
     //REWARDS
     //UPDATES

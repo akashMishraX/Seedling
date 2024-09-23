@@ -17,7 +17,7 @@ startupRouter.route('/editProject/:projectId').put(authenticate,updateProjectCon
 startupRouter.route('/:projectId/createPost').post(authenticate,createPostController)
 startupRouter.route('/:projectId/readPost/:postId').get(authenticate,readPostController)
 startupRouter.route('/:projectId/deletePost/:postId').delete(authenticate,deletePostController)
-startupRouter.route('/:projectId/readPost/:postId').put(authenticate,updatePostController)
+startupRouter.route('/:projectId/editPost/:postId').put(authenticate,updatePostController)
 
 
 
