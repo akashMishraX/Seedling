@@ -5,6 +5,7 @@ import { Express } from "express";
 import startupRouter from "./routes/startupRoutes";
 import investerRouter from "./routes/investerRoutes";
 import userAuth from "./routes/authRoutes";
+import commentRouter from "./routes/commentRoutes";
 
 
 
@@ -28,6 +29,7 @@ const BASE_URL = '/api/v0'
 const BASE_URL_STARTUP = BASE_URL+'/startup'
 const BASE_URL_INVESTER = BASE_URL+'/investor'
 const BASE_URL_AUTH = BASE_URL+'/auth'
+const BASE_URL_COMMENT = BASE_URL+'/comment'
 const BASE_URL_NOTIFICATION = BASE_URL+'/notification'
 const BASE_URL_TRANSACTION = BASE_URL+'/transaction'
 
@@ -37,8 +39,10 @@ const BASE_URL_TRANSACTION = BASE_URL+'/transaction'
 app.use(BASE_URL_AUTH, userAuth);
 app.use(BASE_URL_STARTUP,  startupRouter); // Protect this route
 app.use(BASE_URL_INVESTER,  investerRouter); // Protect this route
-app.use(BASE_URL_NOTIFICATION,userAuth);// Protect this route
-app.use(BASE_URL_TRANSACTION, userAuth);// Protect this route
+// app.use(BASE_URL_NOTIFICATION,notificationRouter);// Protect this route
+// app.use(BASE_URL_TRANSACTION, transactionRouter);// Protect this route
+app.use(BASE_URL_COMMENT, commentRouter); 
+
 
 declare namespace Express {
     interface Locals {

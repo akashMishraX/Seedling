@@ -113,7 +113,7 @@ CREATE TABLE "Reward" (
 );
 
 -- CreateTable
-CREATE TABLE "Update" (
+CREATE TABLE "Timeline" (
     "update_id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "decription" TEXT NOT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE "Update" (
     "updated_at" TIMESTAMP(3) NOT NULL,
     "project_id" INTEGER NOT NULL,
 
-    CONSTRAINT "Update_pkey" PRIMARY KEY ("update_id")
+    CONSTRAINT "Timeline_pkey" PRIMARY KEY ("update_id")
 );
 
 -- CreateTable
@@ -168,15 +168,14 @@ CREATE TABLE "Transaction" (
 -- CreateTable
 CREATE TABLE "Comment" (
     "comment_id" SERIAL NOT NULL,
-    "parent_comment_id" INTEGER NOT NULL,
     "comment_message" TEXT NOT NULL,
-    "likes_count" INTEGER NOT NULL,
-    "dislikes_count" INTEGER NOT NULL,
-    "is_edited" BOOLEAN NOT NULL,
+    "likes_count" INTEGER NOT NULL DEFAULT 0,
+    "is_edited" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "startup_id" INTEGER,
-    "investorId" INTEGER,
+    "parent_comment_id" INTEGER DEFAULT 0,
+    "post_id" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("comment_id")
 );
@@ -242,7 +241,7 @@ ALTER TABLE "Project" ADD CONSTRAINT "Project_startup_id_fkey" FOREIGN KEY ("sta
 ALTER TABLE "Reward" ADD CONSTRAINT "Reward_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project"("project_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Update" ADD CONSTRAINT "Update_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project"("project_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Timeline" ADD CONSTRAINT "Timeline_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project"("project_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Investor" ADD CONSTRAINT "Investor_investor_id_fkey" FOREIGN KEY ("investor_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -263,10 +262,13 @@ ALTER TABLE "Pledge" ADD CONSTRAINT "Pledge_userId_fkey" FOREIGN KEY ("userId") 
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_pledge_id_fkey" FOREIGN KEY ("pledge_id") REFERENCES "Pledge"("pledge_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_startup_id_fkey" FOREIGN KEY ("startup_id") REFERENCES "Startup"("startup_id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_parent_comment_id_fkey" FOREIGN KEY ("parent_comment_id") REFERENCES "Comment"("comment_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_investorId_fkey" FOREIGN KEY ("investorId") REFERENCES "Investor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "Post"("post_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

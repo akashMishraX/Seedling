@@ -6,6 +6,7 @@ import { asyncHandler } from "../util/asyncHandler";
 import { ApiError } from "../util/errorHandler";
 import { ApiResponse } from "../util/responseHandler";
 
+
 const prisma = new PrismaClient();
 
 
@@ -332,7 +333,7 @@ export class StartupHelperFunctions{
             await tx.reward.deleteMany({
                 where :{ project_id: DELETE_PROJECT_DATA.project_id } 
             })
-            await tx.update.deleteMany({
+            await tx.timeline.deleteMany({
                 where :{ project_id: DELETE_PROJECT_DATA.project_id } 
             })
             const deletedProject = await tx.project.delete({
@@ -438,5 +439,5 @@ export class StartupHelperFunctions{
     }
     //REWARDS
     //UPDATES
-    //COMMENTS
+
 }

@@ -1,4 +1,7 @@
+import { time } from "console";
 import { Request , Response , NextFunction } from "express";
+import { describe } from "node:test";
+import { title } from "process";
 import {z} from "zod";
 
 const userLoginDataSchema = z.object({
@@ -59,6 +62,30 @@ const postSchema = z.object({
     title:z.string(),
     content:z.string()
 })
+const rewardSchema = z.object({
+   project_id:z.number(),
+   reward_id:z.number(),
+   title:z.string(),
+   description:z.string(),
+   amount:z.number(),
+   quantity_available:z.number(), 
+})
+const timelineSchema = z.object({
+    project_id:z.number(),
+    timeline_id:z.number(),
+    title:z.string(),
+    description:z.string(),
+})
+const commentSchema = z.object({
+    comment_id:z.number(),
+    parent_comment_id:z.number(),
+    user_id:z.number(),
+    post_id:z.number(),
+    comment_message:z.string(),
+    like_count:z.number(),
+    is_edited:z.boolean(),
+})
+
 
 export type userLoginData = z.infer<typeof userLoginDataSchema>
 export type JwtPayload = z.infer<typeof JwtPayloadSchema>
@@ -80,3 +107,12 @@ type postMainType = z.infer<typeof postSchema>
 export type postType = Pick<postMainType, 'project_id' | 'title' | 'content'>
 export type postReadOrDeleteType = Pick<postMainType,'project_id'|'post_id'>
 export type postUpdateType = Pick<postMainType,'project_id'|'post_id'|'title'|'content'>
+
+type rewardMainType = z.infer<typeof rewardSchema>
+type timelineMainType = z.infer<typeof timelineSchema>
+
+
+type commentMainType = z.infer<typeof commentSchema>
+export type commentType = Pick<commentMainType,'parent_comment_id'|'comment_message'|'like_count'|'post_id' | 'user_id'>
+export type commentReadOrDeleteType = Pick<commentMainType,'comment_id'|'parent_comment_id'>
+export type commentUpdateType = Pick<commentMainType,'comment_id'|'parent_comment_id'|'comment_message'|'like_count'|'user_id'| 'is_edited'>

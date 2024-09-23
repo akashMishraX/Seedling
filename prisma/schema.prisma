@@ -17,12 +17,12 @@ model User {
   //relationships-> one-to-one
   login        Login?
   Startup      Startup?
+  Investor     Investor?
   //relationships-> many-to-one
   address      Address[]
-  //relationships-> many-to-many
-  Investor     Investor?
   Pledge       Pledge[]
   Notification Notification[]
+  Comment      Comment[]
 
   Roles   Roles? @relation(fields: [role_id], references: [role_id])
   role_id Int?
@@ -71,7 +71,6 @@ model Startup {
   //relationships-> many-to-one
   Project Project[]
   pledge  Pledge[]
-  comment Comment[]
 
   Category    Category? @relation(fields: [category_id], references: [category_id])
   category_id Int?
@@ -95,8 +94,9 @@ model Post {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  Project    Project @relation(fields: [project_id], references: [project_id])
+  Project    Project   @relation(fields: [project_id], references: [project_id])
   project_id Int
+  Comment    Comment[]
 }
 
 model Project {
@@ -116,9 +116,9 @@ model Project {
   startup_id Int
 
   // relationship many-to-one
-  Post   Post[]
-  Reward Reward[]
-  Update Update[]
+  Post     Post[]
+  Reward   Reward[]
+  Timeline Timeline[]
 }
 
 model Reward {
@@ -138,7 +138,7 @@ model Reward {
   Pledge Pledge[]
 }
 
-model Update {
+model Timeline {
   update_id  Int      @id @default(autoincrement())
   // startup_id
   title      String
@@ -163,9 +163,6 @@ model Investor {
 
   //relationships-> many-to-one
   pledge Pledge[]
-
-  // Realtionship many-to-many
-  comment Comment[]
 }
 
 model Pledge {
@@ -204,21 +201,24 @@ model Transaction {
 }
 
 model Comment {
-  comment_id        Int      @id @default(autoincrement())
-  parent_comment_id Int
-  comment_message   String
-  likes_count       Int
-  dislikes_count    Int
-  is_edited         Boolean
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  comment_id      Int      @id @default(autoincrement())
+  comment_message String
+  likes_count     Int      @default(0)
+  is_edited       Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  // Realtionship many-to-many
+  // Self-relation for nested comments
+  parent_comment    Comment?  @relation("NestedComments", fields: [parent_comment_id], references: [comment_id])
+  parent_comment_id Int?      @default(0)
+  replies           Comment[] @relation("NestedComments")
 
-  Startup    Startup?  @relation(fields: [startup_id], references: [startup_id])
-  startup_id Int?
-  Investor   Investor? @relation(fields: [investorId], references: [id])
-  investorId Int?
+  // Relation to User (as the author)
+  post    Post @relation(fields: [post_id], references: [post_id])
+  post_id Int
+
+  user    User @relation(fields: [user_id], references: [id])
+  user_id Int
 }
 
 model Notification {
